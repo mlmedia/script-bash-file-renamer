@@ -1,32 +1,33 @@
 #!/bin/bash
 
-# if the argument passed is an actual directory, continue
+# check if source dir exists
 if [ -d $1 ]
 then
-    # go into target directory
-    cd $1
 
-    # setup the renamed files directory in current directory (for copied files)
-    BACKUPDIR="renamed"
-    if [ -d $1/$BACKUPDIR ]
+    # check for existence of destination dir argument
+    if [ -n "$2" ]
     then
-        rm -r $BACKUPDIR
-    fi
-    mkdir -p $BACKUPDIR
 
-    # loop through the files in the directory
-    ls -R $1 | while read -r FILE
-    do
-        #mv -v "$FILE" `echo $FILE | tr ' ' '_' | tr -d '[{}(),\!]' | tr -d "\'" | tr '[A-Z]' '[a-z]' | sed 's/_-_/_/g'`
-        if [ -f "$FILE" ]
+        # setup the destination directory (delete if it exists and create if it doesn't exist)
+        if [ -d "$2" ]
         then
-            cp "$FILE" $1/$BACKUPDIR
-            echo $FILE
-        else
-            echo 'Not a file - skipped'
+            rm -r $2
         fi
-    done
-# else show error
+        mkdir -p $2
+
+        # copy the entire directory
+        cp -r $1 $2
+
+        # loop through the files in the destination directory (source directory remains untouched)
+        cd $2
+        ls -R $2 | while read -r FILE
+        do
+            #mv -v "$FILE" echo $FILE | tr ' ' '_' | tr -d '[{}(),\!]' | tr -d "\'" | tr '[A-Z]' '[a-z]' | sed 's/_-_/_/g'
+            echo $FILE;
+        done
+    else
+        echo 'Destination directory not set'
+    fi
 else
-    echo 'Directory not found'
+    echo 'Source directory not found'
 fi

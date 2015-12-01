@@ -18,12 +18,15 @@ then
         # copy the entire directory
         cp -r $1 $2
 
-        # loop through the files in the destination directory (source directory remains untouched)
+        # rename the files in the destination directory (source directory remains untouched)
         cd $2
         ls -R $2 | while read -r FILE
         do
-            #mv -v "$FILE" echo $FILE | tr ' ' '_' | tr -d '[{}(),\!]' | tr -d "\'" | tr '[A-Z]' '[a-z]' | sed 's/_-_/_/g'
-            echo $FILE;
+            if [ -f "$FILE" ]
+            then
+                mv -v "$FILE" $(echo $FILE | sed -e 's/[^A-Za-z0-9._-]/_/g' | tr '[A-Z]' '[a-z]')
+                #mv -v "$FILE" `echo $FILE | tr ' ' '-' | tr '[A-Z]' '[a-z]' `
+            fi
         done
     else
         echo 'Destination directory not set'

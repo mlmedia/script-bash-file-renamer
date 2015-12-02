@@ -20,13 +20,9 @@ then
 
         # rename the files in the destination directory (source directory remains untouched)
         cd $2
-        ls -R $2 | while read -r FILE
+        find . -type f|while read f;
         do
-            if [ -f "$FILE" ]
-            then
-                mv -v "$FILE" $(echo $FILE | sed -e 's/[^A-Za-z0-9._-]/_/g' | tr '[A-Z]' '[a-z]')
-                #mv -v "$FILE" `echo $FILE | tr ' ' '-' | tr '[A-Z]' '[a-z]' `
-            fi
+            mv -v "$f" `echo $f | tr ' ' '-' | tr '[A-Z]' '[a-z]' `
         done
     else
         echo 'Destination directory not set'

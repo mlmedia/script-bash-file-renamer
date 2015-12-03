@@ -20,9 +20,16 @@ then
 
         # rename the files in the destination directory (source directory remains untouched)
         cd $2
-        find . -type f|while read f;
+        find . -type f | while read f;
         do
-            mv -v "$f" `echo $f | tr ' ' '-' | tr '[A-Z]' '[a-z]' `
+            e="${f##*.}"
+            temp="${f##*/}"
+            newname=`echo ${temp%.*} | tr '@' '-' | tr '.' '-' | tr ' ' '-' | tr '[A-Z]' '[a-z]' `
+            echo "orig: ${f}"
+            echo "ext: ${e}"
+            echo "temp: ${temp%.*}"
+            echo "newname: ${newname}"
+            #echo mv -v "$f" `echo $f | tr '@' '-' | tr '.' '-' | tr ' ' '-' | tr '[A-Z]' '[a-z]' `
         done
     else
         echo 'Destination directory not set'

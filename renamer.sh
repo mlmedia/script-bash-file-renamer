@@ -23,13 +23,13 @@ then
         find . -type f | while read f;
         do
             e="${f##*.}"
-            temp="${f##*/}"
-            newname=`echo ${temp%.*} | tr '@' '-' | tr '.' '-' | tr ' ' '-' | tr '[A-Z]' '[a-z]' `
+            oldname="${f##*/}"
+            newname=`echo ${oldname%.*} | tr -cd '[[:alnum:]._- ]' | tr ' ' '-' | tr '[A-Z]' '[a-z]' `
             echo "orig: ${f}"
             echo "ext: ${e}"
-            echo "temp: ${temp%.*}"
+            echo "oldname: ${oldname%.*}"
             echo "newname: ${newname}"
-            #echo mv -v "$f" `echo $f | tr '@' '-' | tr '.' '-' | tr ' ' '-' | tr '[A-Z]' '[a-z]' `
+            echo mv -v "$f" `echo $newname.$e`
         done
     else
         echo 'Destination directory not set'

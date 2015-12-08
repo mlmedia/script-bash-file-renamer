@@ -24,12 +24,12 @@ then
         do
             e="${f##*.}"
             oldname="${f##*/}"
-            newname=`echo ${oldname%.*} | tr -cd '[[:alnum:]._- ]' | tr ' ' '-' | tr '[A-Z]' '[a-z]' `
+            newname=`echo ${oldname%.*} | tr -c '[:alnum:]' '-' | tr '[A-Z]' '[a-z]' `
             echo "orig: ${f}"
             echo "ext: ${e}"
             echo "oldname: ${oldname%.*}"
             echo "newname: ${newname}"
-            echo mv -v "$f" `echo $newname.$e`
+            mv -v "$f" `echo $newname.$e`
         done
     else
         echo 'Destination directory not set'

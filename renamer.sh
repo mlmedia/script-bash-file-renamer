@@ -24,7 +24,7 @@ then
         do
             e=`echo ${f##*.} | tr '[A-Z]' '[a-z]'`
             oldname="${f##*/}"
-            newname=`echo ${oldname%.*} | tr -c '[:alnum:]' '-' | tr -s '-' | tr '[A-Z]' '[a-z]' | sed 's/-*$//' `
+            newname=`echo ${oldname%.*} | tr -c '[:alnum:]' '-' | tr -s '-' | tr '[A-Z]' '[a-z]' | sed 's/\-*$//' `
             echo "orig: ${f}"
             echo "ext: ${e}"
             echo "oldname: ${oldname%.*}"

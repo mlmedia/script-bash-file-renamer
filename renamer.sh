@@ -22,9 +22,9 @@ then
         cd $2
         find . -type f | while read f;
         do
-            e="${f##*.}"
+            e=`echo ${f##*.} | tr '[A-Z]' '[a-z]'`
             oldname="${f##*/}"
-            newname=`echo ${oldname%.*} | tr -c '[:alnum:]' '-' | tr '[A-Z]' '[a-z]' `
+            newname=`echo ${oldname%.*} | tr -c '[:alnum:]' '-' | tr -s '-' | tr '[A-Z]' '[a-z]' | sed 's/-*$//' `
             echo "orig: ${f}"
             echo "ext: ${e}"
             echo "oldname: ${oldname%.*}"

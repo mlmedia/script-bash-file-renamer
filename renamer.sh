@@ -22,18 +22,28 @@ then
         cd $2
         find . | while read file;
         do
+            timestamp=$(date +%s)
             if [ -f "$file" ]
             then
                 e=`echo ${file##*.} | tr '[A-Z]' '[a-z]'`
                 dir="${file%/*}"
                 oldname="${file##*/}"
-                newname=`echo ${oldname%.*} | tr -c '[:alnum:]' '-' | tr -s '-' | tr '[A-Z]' '[a-z]' | sed 's/\-*$//' `
-                echo "orig: ${file}"
-                echo "ext: ${e}"
-                echo "dir: ${dir}"
-                echo "oldname: ${oldname%.*}"
-                echo "newname: ${newname}"
-                mv -v "$file" `echo $dir/$newname.$e`
+                newname=`echo ${oldname%.*} | tr -c '[:alnum:]' '-' | tr -s '-' | tr '[A-Z]' '[a-z]' | sed 's/\-*$//'`
+                if [ -f "$dir/$newname.$e" ]
+                then
+                	echo "$newname.$e found."
+                    rename=`echo ${newname}-${timestamp}`
+                    mv -v "$file" `echo $dir/$rename.$e`
+                else
+                	echo "$newname.$e not found."
+                    mv -v "$file" `echo $dir/$newname.$e`
+                fi
+                #echo "orig: ${file}"
+                #echo "ext: ${e}"
+                #echo "dir: ${dir}"
+                #echo "oldname: ${oldname%.*}"
+                #echo "newname: ${newname}"
+                #mv -v "$file" `echo $dir/$newname.$e`
             fi
         done
     else

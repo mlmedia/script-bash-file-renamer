@@ -20,6 +20,7 @@ then
 
         # rename the files in the destination directory (source directory remains untouched)
         cd $2
+        i=0;
         find . | while read file;
         do
             timestamp=$(date +%s)
@@ -28,15 +29,17 @@ then
                 e=`echo ${file##*.} | tr '[A-Z]' '[a-z]'`
                 dir="${file%/*}"
                 oldname="${file##*/}"
+                truncated=${oldname::30}
                 newname=`echo ${oldname%.*} | tr -c '[:alnum:]' '-' | tr -s '-' | tr '[A-Z]' '[a-z]' | sed 's/\-*$//'`
                 if [ -f "$dir/$newname.$e" ]
                 then
-                	echo "$newname.$e found."
-                    rename=`echo ${newname}-${timestamp}`
+                    ((i++))
+                    echo "$dir/$newname.$e"
+                    # append the timestamp and iterated number
+                    rename=`echo ${newname}-${timestamp}${i}`
                     mv -v "$file" `echo $dir/$rename.$e`
                 else
-                	echo "$newname.$e not found."
-                    mv -v "$file" `echo $dir/$newname.$e`
+                    mv -v "$file" `echo $dir/${newname}.$e`
                 fi
                 #echo "orig: ${file}"
                 #echo "ext: ${e}"

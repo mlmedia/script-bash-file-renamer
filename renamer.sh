@@ -29,24 +29,31 @@ then
                 e=`echo ${file##*.} | tr '[A-Z]' '[a-z]'`
                 dir="${file%/*}"
                 oldname="${file##*/}"
-                truncated=${oldname::30}
-                newname=`echo ${oldname%.*} | tr -c '[:alnum:]' '-' | tr -s '-' | tr '[A-Z]' '[a-z]' | sed 's/\-*$//'`
-                if [ -f "$dir/$newname.$e" ]
+                # truncate to 40 characters to make room for appended timestamp if necessary
+                truncated=${oldname::40}
+                newname=`echo ${truncated%.*} | tr -c '[:alnum:]' '-' | tr -s '-' | tr '[A-Z]' '[a-z]' | sed 's/\-*$//'`
+
+                # check the length of the filename (skip files with no filename before the . like .DS_Store and .htaccess)
+                len=$(echo ${#newname})
+                if [ $len -gt 1 ]
                 then
-                    ((i++))
-                    echo "$dir/$newname.$e"
-                    # append the timestamp and iterated number
-                    rename=`echo ${newname}-${timestamp}${i}`
-                    mv -v "$file" `echo $dir/$rename.$e`
-                else
-                    mv -v "$file" `echo $dir/${newname}.$e`
+                    if [ -f "$dir/$newname.$e" ]
+                    then
+                        ((i++))
+                        echo "$dir/$newname.$e"
+                        # append the timestamp and iterated number
+                        rename=`echo ${newname}-${timestamp}${i}`
+                        mv -v "$file" `echo $dir/$rename.$e`
+                    else
+                        mv -v "$file" `echo $dir/${newname}.$e`
+                    fi
+                    #echo "orig: ${file}"
+                    #echo "ext: ${e}"
+                    #echo "dir: ${dir}"
+                    #echo "oldname: ${oldname%.*}"
+                    #echo "newname: ${newname}"
+                    #mv -v "$file" `echo $dir/$newname.$e`
                 fi
-                #echo "orig: ${file}"
-                #echo "ext: ${e}"
-                #echo "dir: ${dir}"
-                #echo "oldname: ${oldname%.*}"
-                #echo "newname: ${newname}"
-                #mv -v "$file" `echo $dir/$newname.$e`
             fi
         done
     else

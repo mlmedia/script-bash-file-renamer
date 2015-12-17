@@ -1,9 +1,12 @@
 #File renamer (shell)#
-Shell script to copy a source directory and recursively rename all of the files in the directory in accordance with the following convention:
-- all special characters are replaced with hyphens
+This litte project contains a shell script to copy a source directory and recursively rename all of the files in the directory in accordance with the following convention:
+- all special characters are replaced with hyphens (e.g. "My_File~Wit#Spec!@lC#@racter5.txt" -> "my-file-wit-spec-lc-racter5.txt")
 - all spaces are replaced with hyphens (e.g. "My Awesome Document with Spaces.pdf" -> "my-awesome-document-with-spaces.pdf")
-- all filenames are converted to lowercase letters (e.g. "MyFileName.DOC" -> "myfilename.doc")
-- all file extensions are converted to lowercase letters (e.g. "JPG" -> "jpg")
+- consecutive special characters or hyphens are converted to single hyphens (e.g. "My------Badly_________Named#######File.txt" -> "my-badly-named-file.txt")
+- all filenames are converted to lowercase letters (e.g. "MyFileName.doc" -> "myfilename.doc")
+- all file extensions are converted to lowercase letters (e.g. "myImage.JPG" -> "myimage.jpg")
+- duplicate files are appended with a timestamp and iterator to ensure no files are overwritten (e.g. "duplicate-file.jpg" -> "duplicate-file-12345654321.jpg")
+- filenames are truncated to 40 characters
 
 ##Usage/Installation##
 1. Download / grab the renamer.sh file and place it anywhere on your computer

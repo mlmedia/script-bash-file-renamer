@@ -37,11 +37,18 @@ then
                 newdir=`echo ${dir} | tr ' ' '_'`
                 echo "$newdir"
 
+                # create the directory if it does not exist
+                if [ ! -d $newdir ];
+                then
+                    mkdir $newdir
+                fi
+
+
                 # check the length of the filename (skip files with no filename before the . like .DS_Store and .htaccess)
                 len=$(echo ${#newname})
                 if [ $len -gt 1 ]
                 then
-                    if [ -f "$dir/$newname.$e" ]
+                    if [ -f "$olddir/$newname.$e" ]
                     then
                         ((i++))
                         #echo "$dir/$newname.$e"

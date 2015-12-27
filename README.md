@@ -6,7 +6,8 @@ This litte project contains a shell script to copy a source directory and recurs
 - all filenames are converted to lowercase letters (e.g. "MyFileName.doc" -> "myfilename.doc")
 - all file extensions are converted to lowercase letters (e.g. "myImage.JPG" -> "myimage.jpg")
 - duplicate files are appended with a timestamp and iterator to ensure no files are overwritten (e.g. "duplicate-file.jpg" -> "duplicate-file-12345654321.jpg")
-- filenames are truncated to 40 characters
+- filenames are truncated to 40 characters (before appending the timestamp/iterator modifier above)
+- directory names are not changed
 
 ##Usage/Installation##
 1. Download / grab the renamer.sh file and place it anywhere on your computer

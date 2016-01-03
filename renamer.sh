@@ -8,12 +8,13 @@ then
     if [ -n "$2" ]
     then
 
-        # setup the destination directory (delete if it exists and create if it doesn't exist)
+        # setup the destination directory
         if [ -d "$2" ]
         then
-            rm -r $2
+            rm -rf $2
         fi
         mkdir -p $2
+        chmod 0777 -R $2
 
         # copy the entire directory
         cp -r $1 $2
@@ -29,6 +30,7 @@ then
                 e=`echo ${file##*.} | tr '[A-Z]' '[a-z]'`
                 dir="${file%/*}"
                 oldname="${file##*/}"
+                
                 # truncate to 40 characters to make room for appended timestamp if necessary
                 truncated=${oldname::40}
                 newname=`echo ${truncated%.*} | tr -c '[:alnum:]' '-' | tr -s '-' | tr '[A-Z]' '[a-z]' | sed 's/\-*$//'`
@@ -43,7 +45,6 @@ then
                     mkdir $newdir
                 fi
 
-
                 # check the length of the filename (skip files with no filename before the . like .DS_Store and .htaccess)
                 len=$(echo ${#newname})
                 if [ $len -gt 1 ]
@@ -56,7 +57,7 @@ then
                         rename=`echo ${newname}-${timestamp}${i}`
                         mv -v "$file" `echo $newdir/$rename.$e`
                     else
-                        mv -v "$file" `echo $newdir/${newname}.$e`
+                        mv -v "$file" `echo $newdir/$newname.$e`
                     fi
                     #echo "orig: ${file}"
                     #echo "ext: ${e}"

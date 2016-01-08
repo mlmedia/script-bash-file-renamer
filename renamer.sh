@@ -20,13 +20,14 @@ then
         cp -r $1 $2
 
         # rename the directories to remove whitespace (can cause errors)
-        find $2 | while read dir;
+        cd $2
+        find . | while read dir;
         do
             if [ -d "$dir" ]
             then
                 # replace spaces in directory names with underscores to avoid mv error
                 newdir=`echo ${dir} | tr ' ' '-'`
-                echo "$newdir"
+                mv "$dir" `echo $newdir`
             fi
         done
 
@@ -46,16 +47,6 @@ then
                 truncated=${oldname::40}
                 newname=`echo ${truncated%.*} | tr -c '[:alnum:]' '-' | tr -s '-' | tr '[A-Z]' '[a-z]' | sed 's/\-*$//'`
 
-                # replace spaces in directory names with underscores to avoid mv error
-                newdir=`echo ${dir} | tr ' ' '_'`
-                echo "$newdir"
-
-                # create the directory if it does not exist
-                if [ ! -d $newdir ];
-                then
-                    mkdir $newdir
-                fi
-
                 # check the length of the filename (skip files with no filename before the . like .DS_Store and .htaccess)
                 len=$(echo ${#newname})
                 if [ $len -gt 1 ]
@@ -66,9 +57,9 @@ then
                         #echo "$dir/$newname.$e"
                         # append the timestamp and iterated number
                         rename=`echo ${newname}-${timestamp}${i}`
-                        mv -v "$file" `echo $newdir/$rename.$e`
+                        mv -v "$file" `echo $dir/$rename.$e`
                     else
-                        mv -v "$file" `echo $newdir/$newname.$e`
+                        mv -v "$file" `echo $dir/$newname.$e`
                     fi
                 fi
             fi

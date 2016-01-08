@@ -9,6 +9,11 @@ This litte project contains a shell script to copy a source directory and recurs
 - filenames are truncated to 40 characters (before appending the timestamp/iterator modifier above)
 - directory names are not changed
 
+###Purpose###
+On desktop operating systems, spaces in files are not usually a problem.  When we use files on the web, spaces can become problematic.  For example, if you wanted to upload an entire directory of your music files to Amazon S3 for online file storage or usage via a custom cloud application, spaces can cause problems in links.  (e.g. http://www.mycloudmusicstorage.com/Awesome Band/Awesome Song.mp3).   
+
+This is not to say that there aren't work-arounds for file structures with spaces.  However, filenames and directories without spaces are safer and more standards-compliant (e.g. http://www.mycloudmusicstorage.com/awesome-band/awesome-song.mp3). 
+
 ##Usage/Installation##
 1. Download / grab the renamer.sh file and place it anywhere on your computer
 2. Run the following script to rename all files in a directory:

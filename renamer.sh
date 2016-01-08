@@ -19,6 +19,17 @@ then
         # copy the entire directory
         cp -r $1 $2
 
+        # rename the directories to remove whitespace (can cause errors)
+        find $2 | while read dir;
+        do
+            if [ -d "$dir" ]
+            then
+                # replace spaces in directory names with underscores to avoid mv error
+                newdir=`echo ${dir} | tr ' ' '-'`
+                echo "$newdir"
+            fi
+        done
+
         # rename the files in the destination directory (source directory remains untouched)
         cd $2
         i=0;
@@ -59,12 +70,6 @@ then
                     else
                         mv -v "$file" `echo $newdir/$newname.$e`
                     fi
-                    #echo "orig: ${file}"
-                    #echo "ext: ${e}"
-                    #echo "dir: ${dir}"
-                    #echo "oldname: ${oldname%.*}"
-                    #echo "newname: ${newname}"
-                    #mv -v "$file" `echo $dir/$newname.$e`
                 fi
             fi
         done

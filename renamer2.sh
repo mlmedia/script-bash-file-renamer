@@ -26,7 +26,7 @@ then
             if [ -d "$dir" ]
             then
                 # replace spaces in directory names with underscores to avoid mv error
-                newdir=`echo ${dir} | tr ' ' '-'`
+                newdir=`echo ${dir} | tr -s '-'`
                 mv "$dir" `echo $newdir`
             fi
         done

@@ -2,7 +2,11 @@
 This little project contains a shell script to copy a source directory and recursively rename all of the files in the directory in accordance with the following conventions.
 
 ##Directories##
-- all spaces are replaced with hyphens (e.g. My Directory/myfile.jpg -> My-Directory/myfile.jpg)
+- all directories are converted to lowercase letters (e.g. "MyDirectory" -> "mydirectory")
+- all spaces are replaced with hyphens (e.g. My Directory/myfile.jpg -> my-directory/myfile.jpg)
+- all special characters are replaced with hyphens (e.g. "My_#1_Directory@My-computer -> "my-1-directory-my-computer")
+- leading and trailing hyphens are trimmed (e.g. __MY_Directory###__ -> my-directory)
+- consecutive special characters or hyphens are converted to single hyphens (e.g. "__My_Directory_with_#######_too-many_special-chars" -> "my-directory-with-too-many-special-chars")
 
 ##Files##
 - all filenames are converted to lowercase letters (e.g. "MyFileName.doc" -> "myfilename.doc")

@@ -20,16 +20,24 @@ replacedir () {
                 truncateddir=${dir::40}
 				newnamedir=`echo ${truncateddir} | tr [:upper:] [:lower:] | tr -c '[:alnum:]' '-' | tr ' ' '-' | tr -s '-'|sed 's/\-*$//'`
 
+				echo dir=$dir
  				if [[ $newnamedir != $dir && -d "$dir" ]] ;then
 					for match in $(find ./ -maxdepth 1 -type d)
 						do 
+							echo "findresult="$match
 							pattern=`echo ${match##*./}`
+							echo pattern=$pattern
+							echo "newnamedir="$newnamedir ;
 							if [[ "$pattern" = "$newnamedir" ]];then
 								overlap=1
+								echo overlap=$newnamedir
 							fi
 						done
 
 					if [ $overlap -lt 1 ];then
+						echo $PWD
+						echo orgdir=$dir
+						echo moveddir=$newnamedir
 						mv -v "$dir" `echo $newnamedir`
 					else
 						((count++))
@@ -68,22 +76,32 @@ replacefile () {
                 dir="${file%/*}"
                 oldname="${file##*/}"
 
+				echo oldname=$oldname
                 # truncate to 40 characters to make room for appended timestamp if necessary
                 truncated=${oldname::40}
+				echo truncatedname=$truncated
                 newname=`echo ${truncated%.*} | tr -c '[:alnum:]' '-' | tr -s '-' | tr '[A-Z]' '[a-z]' | sed 's/\-*$//'`
+				echo newname=$newname
 
                 # check the length of the filename (skip files with no filename before the . like .DS_Store and .htaccess)
                 len=$(echo ${#newname})
 				rename=`echo ${newname}.${e}`
                 
+				echo rename=$rename
+
                 if [[ $len -gt 1 && $rename != $oldname ]]
                 then
+					echo filedir=$dir
                    	for matchfile in $(find $dir -maxdepth 1 -type f)
 						do 
+							echo "findresultfile="$matchfile;
                 			matchname="${matchfile##*/}"
+							echo matchname=$matchname
 
+							echo "newnamefile="$rename
 							if [[ "$matchname" = "$rename" ]];then
 								overlapfile=1
+								echo overlapfile=$rename
 							fi
 						done
 
@@ -93,6 +111,7 @@ replacefile () {
 						((countfile++))
                         # append the timestamp and iterated number
                         rename=`echo ${newname}-${timestamp}${countfile}`
+						echo timestamp=$rename
                         mv -v "$file" `echo $dir/$rename.$e`
 					fi
 

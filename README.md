@@ -37,6 +37,13 @@ Running the following script on the sample_files/ directory found in this applic
 sh rename.sh ./sample_files ./renamed
 ```
 
+###NOTE on switching between Linux/Unix and Windows###
+If running the script throws a "syntax error near unexpected token..." error message, it may be because Windows can change the encoding of the file if you have opened or edited it.  To fix this error, run DOS2UNIX:
+
+- For Mac, install it with "brew install dos2unix")
+- For Linux Ubuntu, install with "apt-get install dos2unix"
+- Then use the command "dos2unix renamer.sh"
+
 ##Learn / Adopt / Fork##
 I try to use clear commenting to explain my code, so if you'd like to learn more, simply view the "renamer.sh" file.
 

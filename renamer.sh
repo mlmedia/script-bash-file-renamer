@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # directory renaming function
-rename_dir () {
+renamedir(){
     count=0
     for dir in *
     do
@@ -58,10 +58,10 @@ rename_dir () {
                 if cd "$newname"
                 then
                     # increase the depth
-                    # then recursively call the rename_dir function
+                    # then recursively call the renamedir function
                     # finally iterate +1 on the dir counter
                     depth=`expr $depth + 1`
-                    rename_dir
+                    renamedir
                     numdirs=`expr $numdirs + 1`
                 fi
             fi
@@ -74,7 +74,7 @@ rename_dir () {
     # if depth = 0, set the finish_flag to 1 (true)
     if [ "$depth" ]
     then
-        # flag that the rename_dir function is complete
+        # flag that the renamedir function is complete
         finish_flag=1
     fi
 
@@ -162,17 +162,17 @@ finish_flag=0
 depth=0
 numdirs=0
 
- # while the finish flag is unset, run the rename_dir function
+ # while the finish flag is unset, run the renamedir function
 while [ "$finish_flag" != 1 ]
 do
-   rename_dir
+   renamedir
 done
 
 # give a little feedback to the command line
 echo "directory count: $numdirs"
 echo "starting to replace files in: $2"
 
-# fire the rename_file function when the rename_dir function is done
+# fire the rename_file function when the renamedir function is done
 cd $2
     rename_file
 exit 0

@@ -7,21 +7,25 @@ rename_dir () {
     do
         timestamp=$(date +%s)
         overlap=0
+
+        # if the file is a directory
         if [ -d "$dir" ]
-        then # ==> if directory...
-            if [ -L "$dir" ] ; then   # ==> if dir is symbolic link...
+        then
+            # if dir is symbolic link
+            if [ -L "$dir" ]
+            then
                 echo "-------$dir" `ls -l $dir | sed 's/^.*'$dir' //'`
-                # ==> dir for exeption of date and time
             else
+                # else rename the directory
                 # truncate to 40 characters to make room for appended timestamp if necessary
-                truncateddir=${dir::40}
-                newnamedir=`echo ${truncateddir} | tr [:upper:] [:lower:] | tr -c '[:alnum:]' '-' | tr ' ' '-' | tr -s '-'|sed 's/\-*$//'`
-                if [[ $newnamedir != $dir && -d "$dir" ]]
+                truncated=${dir::40}
+                newname=`echo ${truncated} | tr [:upper:] [:lower:] | tr -c '[:alnum:]' '-' | tr ' ' '-' | tr -s '-'|sed 's/\-*$//'`
+                if [[ $newname != $dir && -d "$dir" ]]
                 then
                     for match in $(find ./ -maxdepth 1 -type d)
                     do
                         pattern=`echo ${match##*./}`
-                        if [[ "$pattern" = "$newnamedir" ]]
+                        if [[ "$pattern" = "$newname" ]]
                         then
                             overlap=1
 						fi
@@ -29,31 +33,41 @@ rename_dir () {
 
                     if [ $overlap -lt 1 ]
                     then
-                        mv -v "$dir" `echo $newnamedir`
+                        mv -v "$dir" `echo $newname`
 					else
-						((count++))
                         # append the timestamp and iterated number
-                        newnamedir=`echo ${newnamedir}-${timestamp}${count}`
-                        mv -v "$dir" `echo $newnamedir`
+						((count++))
+                        newname=`echo ${newname}-${timestamp}${count}`
+                        mv -v "$dir" `echo $newname`
 					fi
 				fi
-                if cd "$newnamedir"
-                then  # ==> if subdir is exist...
-                    #for file in $dir; do echo "$file"; done
-                    deep=`expr $deep + 1`   # ==> increase the depth.
-                    rename_dir     # recursive call ;-)
-                    numdirs=`expr $numdirs + 1`   # ==> increase the count of dir.
+
+                # if the subdirectory exists
+                if cd "$newname"
+                then
+                    # increase the depth
+                    # then recursively call the rename_dir function
+                    # finally iterate +1 on the dir counter
+                    depth=`expr $depth + 1`
+                    rename_dir
+                    numdirs=`expr $numdirs + 1`
                 fi
             fi
         fi
     done
 
-    cd ..   # ==> upward to parent directory.
-    if [ "$deep" ]
-    then  # ==> if depth = 0 return TRUE...
-        swfi=1   # ==> the flag that the rename_dir is complete
+    # switch to parent directory
+    cd ..
+
+    # if depth = 0, set the finish_flag to 1 (true)
+    if [ "$depth" ]
+    then
+        # flag that the rename_dir function is complete
+        finish_flag=1
     fi
-    deep=`expr $deep - 1`  # ==> decrease the depth.
+
+    # decrease the depth after CD
+    depth=`expr $depth - 1`
 }
 
 # file renaming function
@@ -101,13 +115,12 @@ rename_file () {
     done
 }
 
-# - main function -
+# primary loop
 if [ $# != 2 ]
 then
-    echo "No args !!!"    # ==> start in current directory if no arg.
+    echo "ERROR: source and destination directories need to be passed as arguments (e.g. \"sh renamer.sh /PATH/TO/SOURCE/ /PATH/TO/DESTINATION\")"
     exit 0
 else
-    #cd $1       # ==> no move to indicated dir.
     # setup the destination directory
     if [ -d "$2" ]
     then
@@ -121,19 +134,24 @@ else
     cd $2
 fi
 
-echo "start replace directory in `pwd`"
-swfi=0      # ==> rename_dir exit flag.
-deep=0      # ==> the depth for show
+echo "replacing directories in `pwd`"
+
+# set the default values for the vars
+finish_flag=0
+depth=0
 numdirs=0
 
-while [ "$swfi" != 1 ]   # if flag is unset...
+ # while the finish flag is unset, run the rename_dir function
+while [ "$finish_flag" != 1 ]
 do
-   rename_dir   # ==> first, replace the dir name
+   rename_dir
 done
-echo "counts of directory = $numdirs"
 
-echo "start replace file in $2"
+# give a little feedback to the command line
+echo "directory count: $numdirs"
+echo "starting to replace files in: $2"
 
+# fire the rename_file function when the rename_dir function is done
 cd $2
-    rename_file   # ==> second, replace the file name
+    rename_file
 exit 0

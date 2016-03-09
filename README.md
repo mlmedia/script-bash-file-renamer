@@ -1,14 +1,15 @@
 #File renamer (shell)#
 This little project contains a shell script to copy a source directory and recursively rename all of the files in the directory in accordance with the following conventions.
 
-##Directories##
+##Conventions##
+###Directories###
 - all directories are converted to lowercase letters (e.g. "MyDirectory" -> "mydirectory")
 - all spaces are replaced with hyphens (e.g. My Directory/myfile.jpg -> my-directory/myfile.jpg)
 - all special characters are replaced with hyphens (e.g. "My_#1_Directory@My-computer -> "my-1-directory-my-computer")
 - leading and trailing hyphens are trimmed (e.g. \_\_MY_Directory###_\_ -> my-directory)
 - consecutive special characters or hyphens are converted to single hyphens (e.g. "__My_Directory_with_#######_too-many_special-chars" -> "my-directory-with-too-many-special-chars")
 
-##Files##
+###Files###
 - all filenames are converted to lowercase letters (e.g. "MyFileName.doc" -> "myfilename.doc")
 - all file extensions are converted to lowercase letters (e.g. "myImage.JPG" -> "myimage.jpg")
 - all spaces are replaced with hyphens (e.g. "My Awesome Document with Spaces.pdf" -> "my-awesome-document-with-spaces.pdf")
@@ -42,6 +43,7 @@ If running the script throws a "syntax error near unexpected token..." error mes
 
 - For Mac, install it with "brew install dos2unix")
 - For Linux Ubuntu, install with "apt-get install dos2unix"
+- Search for instructions on other operating systems
 - Then use the command "dos2unix renamer.sh"
 
 ##Learn / Adopt / Fork##

@@ -34,7 +34,7 @@ sh rename.sh PATH/TO/SOURCE/FILE/DIR/ PATH/TO/DESTINATION
 Running the following script on the sample_files/ directory found in this application would be:
 
 ```bash
-sh rename.sh ./sample_files ./sample_files_renamed
+sh rename.sh ./sample_files ./renamed
 ```
 
 ##Learn / Adopt / Fork##

@@ -19,30 +19,42 @@ rename_dir () {
                 # else rename the directory
                 # truncate to 40 characters to make room for appended timestamp if necessary
                 truncated=${dir::40}
-                newname=`echo ${truncated} | tr [:upper:] [:lower:] | tr -c '[:alnum:]' '-' | tr ' ' '-' | tr -s '-'|sed 's/\-*$//'`
-                if [[ $newname != $dir && -d "$dir" ]]
-                then
-                    for match in $(find ./ -maxdepth 1 -type d)
-                    do
-                        pattern=`echo ${match##*./}`
-                        if [[ "$pattern" = "$newname" ]]
-                        then
-                            overlap=1
-						fi
-					done
+                newname=`echo ${truncated} | tr [:upper:] [:lower:] | tr -c '[:alnum:]' '-' | tr ' ' '-' | tr -s '-'| sed 's/\-*$//'`
 
-                    if [ $overlap -lt 1 ]
-                    then
-                        mv -v "$dir" `echo $newname`
-					else
-                        # append the timestamp and iterated number
-						((count++))
-                        newname=`echo ${newname}-${timestamp}${count}`
-                        mv -v "$dir" `echo $newname`
-					fi
+                # set up and use a temp name to get through issue with case insensitivity renames to same name
+                tempname=`echo ${newname}-temp`
+                if [[ -d "$dir" ]]
+                then
+                    mv -v "$dir" `echo $tempname`
+                    mv -v "$tempname" `echo $newname`
+
+                    # iterate the count
+					((count++))
 				fi
 
-                # if the subdirectory exists
+                #if [[ $newname != $dir && -d "$dir" ]]
+                #then
+                #    for match in $(find ./ -maxdepth 1 -type d)
+                #    do
+                #        pattern=`echo ${match##*./}`
+                #        if [[ "$pattern" = "$newname" ]]
+                #        then
+                #            overlap=1
+				#		fi
+				#	done
+
+                #    if [ $overlap -lt 1 ]
+                #    then
+                #        mv -v "$dir" `echo $newname`
+				#	else
+                        # append the timestamp and iterated number
+				#		((count++))
+                #        newname=`echo ${newname}-${timestamp}${count}`
+                #        mv -v "$dir" `echo $newname`
+				#	fi
+				#fi
+
+                # CD into the renamed directory to check for subdirectories
                 if cd "$newname"
                 then
                     # increase the depth
@@ -94,14 +106,14 @@ rename_file () {
             if [[ $len -gt 1 && $rename != $oldname ]]
             then
                	for matchfile in $(find $dir -maxdepth 1 -type f)
-					do
-            			matchname="${matchfile##*/}"
+				do
+        			matchname="${matchfile##*/}"
 
-						if [[ "$matchname" = "$rename" ]]
-                        then
-							overlapfile=1
-						fi
-					done
+					if [[ "$matchname" = "$rename" ]]
+                    then
+						overlapfile=1
+					fi
+				done
 
 				if [ $overlapfile -eq 0 ]
                 then
@@ -112,7 +124,7 @@ rename_file () {
                     rename=`echo ${newname}-${timestamp}${countfile}`
                     mv -v "$file" `echo $dir/$rename.$e`
 				fi
-		   fi
+            fi
         fi
     done
 }

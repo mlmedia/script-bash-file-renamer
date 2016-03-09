@@ -1,12 +1,14 @@
 #File renamer (shell)#
-This little project contains a shell script to copy a source directory and recursively rename all of the files in the directory in accordance with the following conventions.
+This little project contains a shell script to non-destructively copy a source directory and recursively rename all directories and files in the destination directory.
 
 ##Purpose##
-Safety and consistency.
+Safety, consistency and tidiness.
 
 On desktop operating systems, spaces in files are not usually a problem.  When we use files on the web, spaces can become problematic.  For example, if you wanted to upload an entire directory of your music files to Amazon S3 for online file storage or usage via a custom cloud application, spaces can cause problems in links.  (e.g. http://www.mycloudmusicstorage.com/Awesome Band/Awesome Song.mp3).   
 
 This is not to say that there aren't work-arounds for file structures with spaces.  However, filenames and directories without spaces are safer and more standards-compliant (e.g. http://www.mycloudmusicstorage.com/awesome-band/awesome-song.mp3).
+
+In short, it is safer and cleaner to have a directory full of consistently-named rather than a hodge-podge of naming conventions with special characters and case-sensitivity issues.
 
 ##Conventions##
 ###Directories###

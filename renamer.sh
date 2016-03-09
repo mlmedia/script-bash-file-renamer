@@ -32,28 +32,6 @@ renamedir(){
 					((count++))
 				fi
 
-                #if [[ $newname != $dir && -d "$dir" ]]
-                #then
-                #    for match in $(find ./ -maxdepth 1 -type d)
-                #    do
-                #        pattern=`echo ${match##*./}`
-                #        if [[ "$pattern" = "$newname" ]]
-                #        then
-                #            overlap=1
-				#		fi
-				#	done
-
-                #    if [ $overlap -lt 1 ]
-                #    then
-                #        mv -v "$dir" `echo $newname`
-				#	else
-                        # append the timestamp and iterated number
-				#		((count++))
-                #        newname=`echo ${newname}-${timestamp}${count}`
-                #        mv -v "$dir" `echo $newname`
-				#	fi
-				#fi
-
                 # CD into the renamed directory to check for subdirectories
                 if cd "$newname"
                 then

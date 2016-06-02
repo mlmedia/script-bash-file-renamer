@@ -20,13 +20,16 @@ renamedir(){
                 # truncate to 40 characters to make room for appended timestamp if necessary
                 truncated=${dir::40}
                 newname=`echo ${truncated} | tr [:upper:] [:lower:] | tr -c '[:alnum:]' '-' | tr ' ' '-' | tr -s '-'| sed 's/\-*$//'`
+                tempname=`echo ${newname}-temp`
 
                 # set up and use a temp name to get through issue with case insensitivity renames to same name
                 tempname=`echo ${newname}-temp`
                 if [[ -d "$dir" ]]
                 then
-                    mv -v "$dir" `echo $tempname`
-                    mv -v "$tempname" `echo $newname`
+                    cp -rp "$dir" `echo $tempname`
+                    rm -rf "$dir"
+                    cp -rp "$tempname" `echo $newname`
+                    rm -rf "$tempname"
 
                     # iterate the count
 					((count++))
@@ -76,6 +79,7 @@ rename_file () {
             # truncate to 40 characters to make room for appended timestamp if necessary
             truncated=${oldname::40}
             newname=`echo ${truncated%.*} | tr -c '[:alnum:]' '-' | tr -s '-' | tr '[A-Z]' '[a-z]' | sed 's/\-*$//'`
+            tempname=`echo ${newname}-temp`
 
             # check the length of the filename (skip files with no filename before the . like .DS_Store and .htaccess)
             len=$(echo ${#newname})
@@ -93,14 +97,22 @@ rename_file () {
 					fi
 				done
 
+                # give the file a temp name to avoid same name problem
+                cp -p "$file" `echo $dir/$tempname.$e`
+                rm -f "$file"
+
 				if [ $overlapfile -eq 0 ]
                 then
-					 mv -v "$file" `echo $dir/$newname.$e`
+
+                     cp -p "$dir/$tempname.$e" `echo $dir/$newname.$e`
+                     rm -f "$dir/$tempname.$e"
+
 				else
 					((countfile++))
                     # append the timestamp and iterated number
                     rename=`echo ${newname}-${timestamp}${countfile}`
-                    mv -v "$file" `echo $dir/$rename.$e`
+                    cp -p "$dir/$tempname.$e" `echo $dir/$rename.$e`
+                    rm -f "$dir/$tempname.$e"
 				fi
             fi
         fi
@@ -129,7 +141,7 @@ else
     # chmod -R 777 $2
 
     # copy the entire directory
-    cp -r $1 $2
+    cp -rp $1 $2
     cd $2
 fi
 
@@ -143,7 +155,7 @@ numdirs=0
  # while the finish flag is unset, run the renamedir function
 while [ "$finish_flag" != 1 ]
 do
-   renamedir
+    renamedir
 done
 
 # give a little feedback to the command line

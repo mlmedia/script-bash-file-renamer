@@ -95,7 +95,7 @@ rename_file () {
 
 				if [ $overlapfile -eq 0 ]
                 then
-					 mv -v "$file" `echo $dir/$newname.$e`
+					mv -v "$file" `echo $dir/$newname.$e`
 				else
 					((countfile++))
                     # append the timestamp and iterated number
@@ -129,7 +129,7 @@ else
     # chmod -R 777 $2
 
     # copy the entire directory
-    cp -r $1 $2
+    cp -rp $1 $2
     cd $2
 fi
 

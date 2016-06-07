@@ -26,11 +26,16 @@ renamedir(){
                 tempname=`echo ${newname}-temp`
                 if [[ -d "$dir" ]]
                 then
-                    # copy and delete instead of using "mv" to preserve metadata with -p flag
-                    cp -rp "$dir" `echo $tempname`
-                    rm -rf "$dir"
-                    cp -rp "$tempname" `echo $newname`
-                    rm -rf "$tempname"
+                    if [[ $dir != $newname ]]
+                    then
+                        # copy and delete instead of using "mv" to preserve metadata with -p flag
+                        cp -rp "$dir" `echo $tempname`
+                        rm -rf "$dir"
+                        cp -rp "$tempname" `echo $newname`
+                        rm -rf "$tempname"
+                        echo "directory renamed to $newname"
+                        numdirs=`expr $numdirs + 1`
+                    fi
 
                     # iterate the count
 					((count++))
@@ -44,7 +49,6 @@ renamedir(){
                     # finally iterate +1 on the dir counter
                     depth=`expr $depth + 1`
                     renamedir
-                    numdirs=`expr $numdirs + 1`
                 fi
             fi
         fi
@@ -65,60 +69,82 @@ renamedir(){
 }
 
 # file renaming function
-rename_file () {
+rename_file(){
     countfile=0
-    find . | while read file
-    do
-        timestamp=$(date +%s)
-        overlapfile=0
-        if [ -f "$file" ]
-        then
-            e=`echo ${file##*.} | tr '[A-Z]' '[a-z]'`
-            dir="${file%/*}"
-            oldname="${file##*/}"
+    renamed_files=0
 
-            # truncate to 40 characters to make room for appended timestamp if necessary
-            truncated=${oldname::40}
-            newname=`echo ${truncated%.*} | tr -c '[:alnum:]' '-' | tr -s '-' | tr '[A-Z]' '[a-z]' | sed 's/\-*$//'`
-            tempname=`echo ${newname}-temp`
-
-            # check the length of the filename (skip files with no filename before the . like .DS_Store and .htaccess)
-            len=$(echo ${#newname})
-			rename=`echo ${newname}.${e}`
-
-            if [[ $len -gt 1 && $rename != $oldname ]]
+    # nesting the while loop so the renamed_files count can be passed outside it
+    find . | \
+    {
+        while read file
+        do
+            timestamp=$(date +%s)
+            overlapfile=0
+            if [ -f "$file" ]
             then
-               	for matchfile in $(find $dir -maxdepth 1 -type f)
-				do
-        			matchname="${matchfile##*/}"
+                e=`echo ${file##*.} | tr '[A-Z]' '[a-z]'`
+                dir="${file%/*}"
+                oldname="${file##*/}"
 
-					if [[ "$matchname" = "$rename" ]]
-                    then
-						overlapfile=1
-					fi
-				done
+                # truncate to 40 characters to make room for appended timestamp if necessary
+                truncated=${oldname::40}
+                newname=`echo ${truncated%.*} | tr -c '[:alnum:]' '-' | tr -s '-' | tr '[A-Z]' '[a-z]' | sed 's/\-*$//'`
+                tempname=`echo ${newname}-temp`
 
-                # give the file a temp name to avoid same name problem
-                cp -p "$file" `echo $dir/$tempname.$e`
-                rm -f "$file"
+                # check the length of the filename (skip files with no filename before the . like .DS_Store and .htaccess)
+                len=$(echo ${#newname})
+    			rename=`echo ${newname}.${e}`
 
-				if [ $overlapfile -eq 0 ]
+                if [[ $len -gt 1 && $rename != $oldname ]]
                 then
-                    # copy and delete instead of using "mv" to preserve metadata with -p flag
-                    cp -p "$dir/$tempname.$e" `echo $dir/$newname.$e`
-                    rm -f "$dir/$tempname.$e"
-				else
-					((countfile++))
-                    # append the timestamp and iterated number
-                    rename=`echo ${newname}-${timestamp}${countfile}`
+                   	for matchfile in $(find $dir -maxdepth 1 -type f)
+    				do
+            			matchname="${matchfile##*/}"
 
-                    # copy and delete instead of using "mv" to preserve metadata with -p flag
-                    cp -p "$dir/$tempname.$e" `echo $dir/$rename.$e`
-                    rm -f "$dir/$tempname.$e"
-				fi
+    					if [[ "$matchname" = "$rename" ]]
+                        then
+    						overlapfile=1
+    					fi
+    				done
+
+                    # give the file a temp name to avoid same name problem
+                    cp -p "$file" `echo $dir/$tempname.$e`
+                    rm -f "$file"
+
+    				if [ $overlapfile -eq 0 ]
+                    then
+                        if [[ $tempname != $newname ]]
+                        then
+                            # copy and delete instead of using "mv" to preserve metadata with -p flag
+                            cp -p "$dir/$tempname.$e" `echo $dir/$newname.$e`
+                            rm -f "$dir/$tempname.$e"
+                            echo "file renamed to $dir/$newname.$e"
+
+                            # iterate the file renamed counter
+                            ((renamed_files++))
+                        fi
+    				else
+                        # iterate the file renamed counter
+                        ((renamed_files++))
+
+                        # iterate the file count for renaming purposes
+    					((countfile++))
+
+                        # append the timestamp and iterated number
+                        rename=`echo ${newname}-${timestamp}${countfile}`
+
+                        # copy and delete instead of using "mv" to preserve metadata with -p flag
+                        cp -p "$dir/$tempname.$e" `echo $dir/$rename.$e`
+                        rm -f "$dir/$tempname.$e"
+                        echo "file renamed to $dir/$rename.$e"
+    				fi
+                fi
             fi
-        fi
-    done
+        done
+
+        # give a little more feedback to the command line
+        echo "files renamed: $renamed_files"
+    }
 }
 
 # primary loop
@@ -161,7 +187,7 @@ do
 done
 
 # give a little feedback to the command line
-echo "directory count: $numdirs"
+echo "directories renamed: $numdirs"
 echo "starting to replace files in: $2"
 
 # fire the rename_file function when the renamedir function is done

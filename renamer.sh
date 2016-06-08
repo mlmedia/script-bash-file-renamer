@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # directory renaming function
-renamedir(){
+rename_dirs(){
     count=0
     for dir in *
     do
@@ -28,13 +28,23 @@ renamedir(){
                 then
                     if [[ $dir != $newname ]]
                     then
+                        # iterate the number of changed directories
+                        num_dirs_renamed=`expr $num_dirs_renamed + 1`
+
                         # copy and delete instead of using "mv" to preserve metadata with -p flag
                         cp -rp "$dir" `echo $tempname`
                         rm -rf "$dir"
                         cp -rp "$tempname" `echo $newname`
                         rm -rf "$tempname"
-                        echo "directory renamed to $newname"
-                        numdirs=`expr $numdirs + 1`
+
+                        # feedback for the command line
+                        echo "directory $dir renamed to $newname"
+                    else
+                        # iterate the number of changed directories
+                        num_dirs_unchanged=`expr $num_dirs_unchanged + 1`
+
+                        # feedback for the command line
+                        echo "directory $dir unchanged"
                     fi
 
                     # iterate the count
@@ -45,10 +55,10 @@ renamedir(){
                 if cd "$newname"
                 then
                     # increase the depth
-                    # then recursively call the renamedir function
+                    # then recursively call the rename_dirs function
                     # finally iterate +1 on the dir counter
                     depth=`expr $depth + 1`
-                    renamedir
+                    rename_dirs
                 fi
             fi
         fi
@@ -60,7 +70,7 @@ renamedir(){
     # if depth = 0, set the finish_flag to 1 (true)
     if [ "$depth" ]
     then
-        # flag that the renamedir function is complete
+        # flag that the rename_dirs function is complete
         finish_flag=1
     fi
 
@@ -69,11 +79,12 @@ renamedir(){
 }
 
 # file renaming function
-rename_file(){
+rename_files(){
     countfile=0
-    renamed_files=0
+    num_files_renamed=0
+    num_files_unchanged=0
 
-    # nesting the while loop so the renamed_files count can be passed outside it
+    # nesting the while loop so the num_files_renamed count can be passed outside it
     find . | \
     {
         while read file
@@ -113,19 +124,16 @@ rename_file(){
 
     				if [ $overlapfile -eq 0 ]
                     then
-                        if [[ $tempname != $newname ]]
-                        then
-                            # copy and delete instead of using "mv" to preserve metadata with -p flag
-                            cp -p "$dir/$tempname.$e" `echo $dir/$newname.$e`
-                            rm -f "$dir/$tempname.$e"
-                            echo "file renamed to $dir/$newname.$e"
+                        # copy and delete instead of using "mv" to preserve metadata with -p flag
+                        cp -p "$dir/$tempname.$e" `echo $dir/$newname.$e`
+                        rm -f "$dir/$tempname.$e"
+                        echo "file renamed to $dir/$newname.$e"
 
-                            # iterate the file renamed counter
-                            ((renamed_files++))
-                        fi
+                        # iterate the file renamed counter
+                        ((num_files_renamed++))
     				else
                         # iterate the file renamed counter
-                        ((renamed_files++))
+                        ((num_files_renamed++))
 
                         # iterate the file count for renaming purposes
     					((countfile++))
@@ -138,12 +146,23 @@ rename_file(){
                         rm -f "$dir/$tempname.$e"
                         echo "file renamed to $dir/$rename.$e"
     				fi
+                else
+                    # command line feedback
+                    echo "file $file unchanged"
+
+                    # iterate the file unchanged counter
+                    ((num_files_unchanged++))
                 fi
             fi
         done
 
         # give a little more feedback to the command line
-        echo "files renamed: $renamed_files"
+        echo "..."
+        echo "FILE RENAME COMPLETE"
+        echo "files renamed: $num_files_renamed"
+        echo "files unchanged: $num_files_unchanged"
+        echo "...\n..."
+        echo "SCRIPT COMPLETE"
     }
 }
 
@@ -169,28 +188,42 @@ else
     # chmod -R 777 $2
 
     # copy the entire directory
+    echo "STARTING to copy $1 to $2"
     cp -rp $1 $2
+    echo "..."
+    echo "COPY COMPLETE"
+    echo "...\n..."
     cd $2
 fi
 
-echo "replacing directories in `pwd`"
+# command line feedback
+echo "STARTING to rename directories in `pwd`"
+echo "..."
 
 # set the default values for the vars
 finish_flag=0
 depth=0
-numdirs=0
+num_dirs_renamed=0
+num_dirs_unchanged=0
 
- # while the finish flag is unset, run the renamedir function
+ # while the finish flag is unset, run the rename_dirs function
 while [ "$finish_flag" != 1 ]
 do
-    renamedir
+    rename_dirs
 done
 
-# give a little feedback to the command line
-echo "directories renamed: $numdirs"
-echo "starting to replace files in: $2"
+# command line feedback
+echo "..."
+echo "DIRECTORY RENAME COMPLETE"
+echo "directories renamed: $num_dirs_renamed"
+echo "directories unchanged: $num_dirs_unchanged"
+echo "...\n..."
+echo "STARTING to rename files in: $2"
+echo "..."
 
-# fire the rename_file function when the renamedir function is done
+# fire the rename_files function when the rename_dirs function is done
 cd $2
-    rename_file
+rename_files
+
+# exit the script
 exit 0

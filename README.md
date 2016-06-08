@@ -8,9 +8,9 @@ On desktop operating systems, spaces in files are not usually a problem.  When w
 
 This is not to say that there aren't work-arounds for file structures with spaces.  However, filenames and directories without spaces are safer and more standards-compliant (e.g. http://www.mycloudmusicstorage.com/awesome-band/awesome-song.mp3).
 
-In short, it is safer and cleaner to have a directory full of consistently-named rather than a hodge-podge of naming conventions with special characters and case-sensitivity issues.
+In short, it is safer and cleaner to have a directory full of consistently-named files rather than a hodge-podge of naming conventions with special characters and case-sensitivity issues.
 
-##Conventions##
+##Naming conventions##
 ###Directories###
 - all directories are converted to lowercase letters (e.g. "MyDirectory" -> "mydirectory")
 - all spaces are replaced with hyphens (e.g. My Directory/myfile.jpg -> my-directory/myfile.jpg)
@@ -25,14 +25,14 @@ In short, it is safer and cleaner to have a directory full of consistently-named
 - all special characters are replaced with hyphens (e.g. "My_File~Wit#Spec!@lC#@racter5.txt" -> "my-file-wit-spec-lc-racter5.txt")
 - consecutive special characters or hyphens are converted to single hyphens (e.g. "My------Badly\_\_\_Named#######File.txt" -> "my-badly-named-file.txt")
 - duplicate files are appended with a timestamp and iterator to ensure no files are overwritten (e.g. "duplicate-file.jpg" -> "duplicate-file-12345654321.jpg")
-- all filenames are truncated to 40 characters
+- all filenames are truncated to 40 characters (prior to appending timestamp / iterator)
 
 ##Usage/Installation##
 1. Download / grab the renamer.sh file and place it anywhere on your computer
 2. Run the following script to rename all files in a directory:
 
 ```bash
-sh rename.sh PATH/TO/SOURCE/FILE/DIR/ PATH/TO/DESTINATION
+sh /PATH/TO/RENAMER/rename.sh PATH/TO/SOURCE/FILE/DIR/ PATH/TO/DESTINATION
 ```
 
 ##Example###

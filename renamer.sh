@@ -105,6 +105,7 @@ rename_files(){
 				# check the length of the filename (skip files with no filename before the . like .DS_Store and .htaccess)
 				len=$(echo ${#newname})
 				rename=`echo ${newname}.${e}`
+				echo $len
 
 				if [[ $len -gt 1 && $rename != $oldname ]]
 				then
@@ -157,12 +158,12 @@ rename_files(){
 		done
 
 		# give a little more feedback to the command line
-		echo "..."
-		echo "FILE RENAME COMPLETE"
-		echo "files renamed: $num_files_renamed"
-		echo "files unchanged: $num_files_unchanged"
-		echo "...\n..."
-		echo "SCRIPT COMPLETE"
+		echo "...";
+		echo "FILE RENAME COMPLETE";
+		echo "files renamed: $num_files_renamed";
+		echo "files unchanged: $num_files_unchanged";
+		echo "...\n...";
+		echo "SCRIPT COMPLETE";
 	}
 }
 

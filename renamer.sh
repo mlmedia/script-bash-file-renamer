@@ -2,11 +2,11 @@
 
 # directory renaming function
 rename_dirs(){
-	count=0
+	count=0;
 	for dir in *
 	do
-		timestamp=$(date +%s)
-		overlap=0
+		timestamp=$(date +%s);
+		overlap=0;
 
 		# if the file is a directory
 		if [ -d "$dir" ]
@@ -14,41 +14,41 @@ rename_dirs(){
 			# if dir is symbolic link
 			if [ -L "$dir" ]
 			then
-				echo "-------$dir" `ls -l $dir | sed 's/^.*'$dir' //'`
+				echo "-------$dir" `ls -l $dir | sed 's/^.*'$dir' //'`;
 			else
 				# else rename the directory
 				# truncate to 40 characters to make room for appended timestamp if necessary
-				truncated=${dir::40}
-				newname=`echo ${truncated} | tr [:upper:] [:lower:] | tr -c '[:alnum:]' '-' | tr ' ' '-' | tr -s '-'| sed 's/\-*$//'`
-				tempname=`echo ${newname}-temp`
+				truncated=${dir::40};
+				newname=`echo ${truncated} | tr [:upper:] [:lower:] | tr -c '[:alnum:]' '-' | tr ' ' '-' | tr -s '-'| sed 's/\-*$//'`;
+				tempname=`echo ${newname}-temp`;
 
 				# set up and use a temp name to get through issue with case insensitivity renames to same name
-				tempname=`echo ${newname}-temp`
+				tempname=`echo ${newname}-temp`;
 				if [[ -d "$dir" ]]
 				then
 					if [[ $dir != $newname ]]
 					then
 						# iterate the number of changed directories
-						num_dirs_renamed=`expr $num_dirs_renamed + 1`
+						num_dirs_renamed=`expr $num_dirs_renamed + 1`;
 
 						# copy and delete instead of using "mv" to preserve metadata with -p flag
-						cp -rp "$dir" `echo $tempname`
-						rm -rf "$dir"
-						cp -rp "$tempname" `echo $newname`
-						rm -rf "$tempname"
+						cp -rp "$dir" `echo $tempname`;
+						rm -rf "$dir";
+						cp -rp "$tempname" `echo $newname`;
+						rm -rf "$tempname";
 
 						# feedback for the command line
-						echo "directory $dir renamed to $newname"
+						echo "directory $dir renamed to $newname";
 					else
 						# iterate the number of changed directories
-						num_dirs_unchanged=`expr $num_dirs_unchanged + 1`
+						num_dirs_unchanged=`expr $num_dirs_unchanged + 1`;
 
 						# feedback for the command line
-						echo "directory $dir unchanged"
+						echo "directory $dir unchanged";
 					fi
 
 					# iterate the count
-					((count++))
+					((count++));
 				fi
 
 				# CD into the renamed directory to check for subdirectories
@@ -57,8 +57,8 @@ rename_dirs(){
 					# increase the depth
 					# then recursively call the rename_dirs function
 					# finally iterate +1 on the dir counter
-					depth=`expr $depth + 1`
-					rename_dirs
+					depth=`expr $depth + 1`;
+					rename_dirs;
 				fi
 			fi
 		fi
@@ -71,85 +71,92 @@ rename_dirs(){
 	if [ "$depth" ]
 	then
 		# flag that the rename_dirs function is complete
-		finish_flag=1
+		finish_flag=1;
 	fi
 
 	# decrease the depth after CD
-	depth=`expr $depth - 1`
+	depth=`expr $depth - 1`;
 }
 
 # file renaming function
 rename_files(){
-	countfile=0
-	num_files_renamed=0
-	num_files_unchanged=0
+	countfile=0;
+	num_files_renamed=0;
+	num_files_unchanged=0;
 
 	# nesting the while loop so the num_files_renamed count can be passed outside it
 	find . | \
 	{
 		while read file
 		do
-			timestamp=$(date +%s)
-			overlapfile=0
+			timestamp=$(date +%s);
+			overlapfile=0;
 			if [ -f "$file" ]
 			then
-				e=`echo ${file##*.} | tr '[A-Z]' '[a-z]'`
-				dir="${file%/*}"
-				oldname="${file##*/}"
+				e=`echo ${file##*.} | tr '[A-Z]' '[a-z]'`;
+				dir="${file%/*}";
+				oldname="${file##*/}";
 
 				# truncate to 40 characters to make room for appended timestamp if necessary
-				truncated=${oldname::40}
-				newname=`echo ${truncated%.*} | tr -c '[:alnum:]' '-' | tr -s '-' | tr '[A-Z]' '[a-z]' | sed 's/\-*$//'`
-				tempname=`echo ${newname}-temp`
+				truncated=${oldname::40};
+				newname=`echo ${truncated%.*} | tr -c '[:alnum:]' '-' | tr -s '-' | tr '[A-Z]' '[a-z]' | sed 's/\-*$//'`;
+				tempname=`echo ${newname}-temp`;
+
+				# truncate shorter version to make room in case of dupe
+				shortnew=${newname::28};
+				shortnewname=`echo ${shortnew%.*} | tr -c '[:alnum:]' '-' | tr -s '-' | tr '[A-Z]' '[a-z]' | sed 's/\-*$//'`;
 
 				# check the length of the filename (skip files with no filename before the . like .DS_Store and .htaccess)
-				len=$(echo ${#newname})
-				rename=`echo ${newname}.${e}`
-				echo $len
+				len=$(echo ${#newname});
+				rename=`echo ${newname}.${e}`;
+				# echo "len: $len";
+				# echo "truncated: $truncated";
+				# echo "newname: $newname";
+				# echo "shortnewname: $shortnewname";
 
 				if [[ $len -gt 1 && $rename != $oldname ]]
 				then
 					for matchfile in $(find $dir -maxdepth 1 -type f)
 					do
-						matchname="${matchfile##*/}"
+						matchname="${matchfile##*/}";
 
 						if [[ "$matchname" = "$rename" ]]
 						then
-							overlapfile=1
+							overlapfile=1;
 						fi
 					done
 
 					# give the file a temp name to avoid same name problem
-					cp -p "$file" `echo $dir/$tempname.$e`
-					rm -f "$file"
+					cp -p "$file" `echo $dir/$tempname.$e`;
+					rm -f "$file";
 
 					if [ $overlapfile -eq 0 ]
 					then
 						# copy and delete instead of using "mv" to preserve metadata with -p flag
-						cp -p "$dir/$tempname.$e" `echo $dir/$newname.$e`
-						rm -f "$dir/$tempname.$e"
-						echo "file renamed to $dir/$newname.$e"
+						cp -p "$dir/$tempname.$e" `echo $dir/$newname.$e`;
+						rm -f "$dir/$tempname.$e";
+						echo "file renamed to $dir/$newname.$e";
 
 						# iterate the file renamed counter
-						((num_files_renamed++))
+						((num_files_renamed++));
 					else
 						# iterate the file renamed counter
-						((num_files_renamed++))
+						((num_files_renamed++));
 
 						# iterate the file count for renaming purposes
-						((countfile++))
+						((countfile++));
 
 						# append the timestamp and iterated number
-						rename=`echo ${newname}-${timestamp}${countfile}`
+						rename=`echo ${shortnewname}-${timestamp}${countfile}`;
 
 						# copy and delete instead of using "mv" to preserve metadata with -p flag
-						cp -p "$dir/$tempname.$e" `echo $dir/$rename.$e`
-						rm -f "$dir/$tempname.$e"
-						echo "file renamed to $dir/$rename.$e"
+						cp -p "$dir/$tempname.$e" `echo $dir/$rename.$e`;
+						rm -f "$dir/$tempname.$e";
+						echo "file renamed to $dir/$rename.$e";
 					fi
 				else
 					# command line feedback
-					echo "file $file unchanged"
+					echo "file $file unchanged";
 
 					# iterate the file unchanged counter
 					((num_files_unchanged++))

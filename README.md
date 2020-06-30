@@ -42,7 +42,7 @@ Running the following script on the sample_files/ directory found in this applic
 sh rename.sh ./sample_files ./renamed
 ```
 
-## #NOTE on switching between Linux/Unix and Windows
+### NOTE on switching between Linux/Unix and Windows
 If running the script throws a "syntax error near unexpected token..." error message, it may be because Windows can change the encoding of the file if you have opened or edited it.  To fix this error, run DOS2UNIX:
 
 - For Mac, install it with "brew install dos2unix")

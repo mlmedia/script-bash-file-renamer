@@ -1,5 +1,5 @@
-# File renamer (Bash shell)
-This little project contains a shell script to non-destructively copy a source directory and recursively rename all directories and files in the destination directory.
+# File renamer script (Bash)
+This little project contains a Bash shell script to non-destructively copy a source directory and recursively rename all directories and files in the destination directory.
 
 ## Purpose
 Safety, consistency and tidiness.

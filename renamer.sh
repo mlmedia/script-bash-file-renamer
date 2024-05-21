@@ -193,7 +193,11 @@ else
 		rm -rf $2
 	fi
 	mkdir -p $2
-	# chmod -R 777 $2
+	if [ -d "$2" ]
+	then
+    	rm -rf "$(printf '%s\n' "$2")"
+	fi
+	mkdir -p "$(printf '%s\n' "$2")"
 
 	# copy the entire directory
 	echo "STARTING to copy $1 to $2"

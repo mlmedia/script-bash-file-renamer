@@ -50,3 +50,6 @@ bower_components
 
 ### Config files with sensitive data
 .env
+
+### Renamed directory
+renamed

@@ -27,8 +27,8 @@ In short, it is safer and cleaner to have a directory full of consistently-named
 -   all filenames are converted to lowercase letters (e.g. `MyFileName.doc` -> `myfilename.doc`)
 -   all file extensions are converted to lowercase letters (e.g. `myImage.JPG` -> `myimage.jpg`)
 -   all spaces are replaced with hyphens (e.g. `My Awesome Document with Spaces.pdf` -> `my-awesome-document-with-spaces.pdf`)
--   all special characters are replaced with hyphens (e.g. `My_File~Wit#Spec!@lC#@racter5.txt" -> "my-file-wit-spec-lc-racter5.txt`)
--   consecutive special characters or hyphens are converted to single hyphens (e.g. `My------Badly___Named#######File.txt" -> "my-badly-named-file.txt`)
+-   all special characters are replaced with hyphens (e.g. `My_File~Wit#Spec!@lC#@racter5.txt` -> `my-file-wit-spec-lc-racter5.txt`)
+-   consecutive special characters or hyphens are converted to single hyphens (e.g. `My------Badly___Named#######File.txt` -> `my-badly-named-file.txt`)
 -   duplicate files are appended with a timestamp and iterator to ensure no files are overwritten (e.g. `duplicate-file.jpg` -> `duplicate-file-12345654321.jpg`)
 -   all filenames are truncated to 40 characters (prior to appending timestamp / iterator)
 

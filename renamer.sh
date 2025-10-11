@@ -12,7 +12,7 @@ rename_dirs() {
 				echo "-------$dir $(ls -l "$dir" | sed "s/^.*$dir //")"
 			else
 				truncated=${dir:0:40}
-				newname=$(echo "$truncated" | tr '[:upper:]' '[:lower:]' | tr -c '[:alnum:]' '-' | tr ' ' '-' | tr -s '-' | sed 's/\-*$//')
+                                newname=$(echo "$truncated" | tr '[:upper:]' '[:lower:]' | tr -c '[:alnum:]' '-' | tr ' ' '-' | tr -s '-' | sed 's/^-*//' | sed 's/\-*$//')
 				tempname="${newname}-temp"
 
 				if [ -d "$dir" ]; then
@@ -23,10 +23,9 @@ rename_dirs() {
 						cp -rp "$tempname" "$newname"
 						rm -rf "$tempname"
 						echo "directory $dir renamed to $newname"
-					else
-						((num_dirs_unchanged++))
-						echo "directory $dir unchanged"
-					fi
+                                        else
+                                                ((num_dirs_unchanged++))
+                                        fi
 					((count++))
 				fi
 
@@ -51,52 +50,73 @@ rename_files() {
 	num_files_renamed=0
 	num_files_unchanged=0
 
-	find . -type f | while read -r file; do
-		timestamp=$(date +%s)
-		overlapfile=0
-		e=$(echo "${file##*.}" | tr '[A-Z]' '[a-z]')
-		dir="${file%/*}"
-		oldname="${file##*/}"
+        while IFS= read -r file; do
+                timestamp=$(date +%s)
+                overlapfile=0
+                dir="${file%/*}"
+                oldname="${file##*/}"
 
-		truncated=${oldname:0:40}
-		newname=$(echo "${truncated%.*}" | tr -c '[:alnum:]' '-' | tr -s '-' | tr '[A-Z]' '[a-z]' | sed 's/\-*$//')
-		tempname="${newname}-temp"
+                truncated=${oldname:0:40}
 
-		shortnew=${newname:0:28}
-		shortnewname=$(echo "${shortnew%.*}" | tr -c '[:alnum:]' '-' | tr -s '-' | tr '[A-Z]' '[a-z]' | sed 's/\-*$//')
+                if [[ "$oldname" == *.* && "$oldname" != .* ]]; then
+                        base="${truncated%.*}"
+                        extension=$(echo "${oldname##*.}" | tr '[:upper:]' '[:lower:]')
+                else
+                        base="$truncated"
+                        extension=""
+                fi
 
-		len=${#newname}
-		rename="${newname}.${e}"
+                sanitized_base=$(echo "$base" | tr '[:upper:]' '[:lower:]' | tr '.' '-' | tr -c '[:alnum:]' '-' | tr -s '-')
+                newname=$(echo "$sanitized_base" | sed 's/^-*//' | sed 's/\-*$//')
+                tempname="${newname}-temp"
 
-		if [[ $len -gt 1 && $rename != $oldname ]]; then
-			for matchfile in "$dir"/*; do
-				matchname="${matchfile##*/}"
-				if [[ "$matchname" == "$rename" ]]; then
-					overlapfile=1
-				fi
-			done
+                shortnew=${newname:0:28}
+                shortnewname=$(echo "$shortnew" | tr '.' '-' | tr -c '[:alnum:]' '-' | tr -s '-' | tr '[:upper:]' '[:lower:]' | sed 's/^-*//' | sed 's/\-*$//')
 
-			cp -p "$file" "$dir/$tempname.$e"
-			rm -f "$file"
+                len=${#newname}
 
-			if [ $overlapfile -eq 0 ]; then
-				cp -p "$dir/$tempname.$e" "$dir/$newname.$e"
-				rm -f "$dir/$tempname.$e"
-				echo "file renamed to $dir/$newname.$e"
-				((num_files_renamed++))
-			else
-				((num_files_renamed++))
-				((countfile++))
-				rename="${shortnewname}-${timestamp}${countfile}"
-				cp -p "$dir/$tempname.$e" "$dir/$rename.$e"
-				rm -f "$dir/$tempname.$e"
-				echo "file renamed to $dir/$rename.$e"
-			fi
-		else
-			echo "file $file unchanged"
-			((num_files_unchanged++))
-		fi
-	done
+                if [ -n "$extension" ]; then
+                        target_name="${newname}.${extension}"
+                        temp_file="$dir/$tempname.$extension"
+                else
+                        target_name="$newname"
+                        temp_file="$dir/$tempname"
+                fi
+
+                if [[ $len -gt 1 && $target_name != "$oldname" ]]; then
+                        for matchfile in "$dir"/*; do
+                                matchname="${matchfile##*/}"
+                                if [[ "$matchname" == "$target_name" ]]; then
+                                        overlapfile=1
+                                fi
+                        done
+
+                        cp -p "$file" "$temp_file"
+                        rm -f "$file"
+
+                        if [ $overlapfile -eq 0 ]; then
+                                final_path="$dir/$target_name"
+                                cp -p "$temp_file" "$final_path"
+                                rm -f "$temp_file"
+                                echo "file renamed to $final_path"
+                                ((num_files_renamed++))
+                        else
+                                ((num_files_renamed++))
+                                ((countfile++))
+                                target_name="${shortnewname}-${timestamp}${countfile}"
+                                if [ -n "$extension" ]; then
+                                        final_path="$dir/$target_name.$extension"
+                                else
+                                        final_path="$dir/$target_name"
+                                fi
+                                cp -p "$temp_file" "$final_path"
+                                rm -f "$temp_file"
+                                echo "file renamed to $final_path"
+                        fi
+                else
+                        ((num_files_unchanged++))
+                fi
+        done < <(find . -type f)
 
 	echo "..."
 	echo "FILE RENAME COMPLETE"
@@ -150,7 +170,6 @@ echo "...\n..."
 echo "STARTING to rename files in: $2"
 echo "..."
 
-cd "$2"
 rename_files
 
 exit 0

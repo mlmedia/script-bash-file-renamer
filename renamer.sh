@@ -61,32 +61,32 @@ rename_files() {
 	num_files_unchanged=0
 
 	tmpfile=$(mktemp)
-        find . -type f -print0 >"$tmpfile"
+	find . -type f -print0 >"$tmpfile"
 
-        while IFS= read -r -d '' file; do
-                timestamp=$(date +%s)
-                overlapfile=0
-                dir="${file%/*}"
-                oldname="${file##*/}"
+	while IFS= read -r -d '' file; do
+		timestamp=$(date +%s)
+		overlapfile=0
+		dir="${file%/*}"
+		oldname="${file##*/}"
 
-                # Skip any files that live inside hidden directories (paths containing
-                # a component that begins with a dot) so that metadata folders such as
-                # .git or macOS resource directories remain untouched.
-                if [[ "$file" == */.* ]]; then
-                        ((num_files_unchanged++))
-                        continue
-                fi
+		# Skip any files that live inside hidden directories (paths containing
+		# a component that begins with a dot) so that metadata folders such as
+		# .git or macOS resource directories remain untouched.
+		if [[ "$file" == */.* ]]; then
+			((num_files_unchanged++))
+			continue
+		fi
 
-                truncated=${oldname:0:40}
+		truncated=${oldname:0:40}
 
-                # Skip hidden files that begin with a dot (e.g., .DS_Store, .htaccess)
-                # to avoid generating renamed copies of metadata files.
-                if [[ "$oldname" == .* && "$oldname" != "." && "$oldname" != ".." ]]; then
-                        ((num_files_unchanged++))
-                        continue
-                fi
+		# Skip hidden files that begin with a dot (e.g., .DS_Store, .htaccess)
+		# to avoid generating renamed copies of metadata files.
+		if [[ "$oldname" == .* && "$oldname" != "." && "$oldname" != ".." ]]; then
+			((num_files_unchanged++))
+			continue
+		fi
 
-                if [[ "$oldname" == *.* && "$oldname" != .* ]]; then
+		if [[ "$oldname" == *.* && "$oldname" != .* ]]; then
 			base="${truncated%.*}"
 			extension=$(echo "${oldname##*.}" | tr '[:upper:]' '[:lower:]')
 		else

@@ -69,9 +69,16 @@ rename_files() {
 		dir="${file%/*}"
 		oldname="${file##*/}"
 
-		truncated=${oldname:0:40}
+                truncated=${oldname:0:40}
 
-		if [[ "$oldname" == *.* && "$oldname" != .* ]]; then
+                # Skip hidden files that begin with a dot (e.g., .DS_Store, .htaccess)
+                # to avoid generating renamed copies of metadata files.
+                if [[ "$oldname" == .* && "$oldname" != "." && "$oldname" != ".." ]]; then
+                        ((num_files_unchanged++))
+                        continue
+                fi
+
+                if [[ "$oldname" == *.* && "$oldname" != .* ]]; then
 			base="${truncated%.*}"
 			extension=$(echo "${oldname##*.}" | tr '[:upper:]' '[:lower:]')
 		else

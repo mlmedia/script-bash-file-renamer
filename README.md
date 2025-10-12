@@ -49,7 +49,7 @@ lowercase naming scheme avoids overwriting, case-sensitivity conflicts, and brit
 2. Run the script with a source and destination directory:
 
    ```bash
-   sh renamer.sh /path/to/source /path/to/destination
+   bash renamer.sh /path/to/source /path/to/destination
    ```
 
    The destination directory is created (or replaced) and populated with sanitized names.
@@ -58,7 +58,7 @@ lowercase naming scheme avoids overwriting, case-sensitivity conflicts, and brit
 Rename the sample files included in this repository:
 
 ```bash
-sh renamer.sh ./sample_files ./renamed
+bash renamer.sh ./sample_files ./renamed
 ```
 
 ### Windows line endings

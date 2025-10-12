@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# Ensure the script is executed with Bash even if invoked with `sh`.
+if [ -z "$BASH_VERSION" ]; then
+        if command -v bash >/dev/null 2>&1; then
+                exec bash "$0" "$@"
+        else
+                echo "ERROR: This script requires Bash, but it was not run with Bash." >&2
+                exit 1
+        fi
+fi
+
 # Function to rename directories
 rename_dirs() {
 	count=0

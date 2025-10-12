@@ -60,7 +60,10 @@ rename_files() {
 	num_files_renamed=0
 	num_files_unchanged=0
 
-        while IFS= read -r file; do
+        tmpfile=$(mktemp)
+        find . -type f -print0 > "$tmpfile"
+
+        while IFS= read -r -d '' file; do
                 timestamp=$(date +%s)
                 overlapfile=0
                 dir="${file%/*}"
@@ -126,7 +129,9 @@ rename_files() {
                 else
                         ((num_files_unchanged++))
                 fi
-        done < <(find . -type f)
+        done < "$tmpfile"
+
+        rm -f "$tmpfile"
 
 	echo "..."
 	echo "FILE RENAME COMPLETE"

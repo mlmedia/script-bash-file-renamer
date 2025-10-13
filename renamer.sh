@@ -83,7 +83,7 @@ rename_files() {
 			echo "$processed_files out of $total_files files complete"
 			continue
 		fi
-	
+
 		truncated=${oldname:0:40}
 
 		# Skip hidden files that begin with a dot (e.g., .DS_Store, .htaccess)
@@ -94,7 +94,7 @@ rename_files() {
 			echo "$processed_files out of $total_files files complete"
 			continue
 		fi
-	
+
 		if [[ "$oldname" == *.* && "$oldname" != .* ]]; then
 			base="${truncated%.*}"
 			extension=$(echo "${oldname##*.}" | tr '[:upper:]' '[:lower:]')

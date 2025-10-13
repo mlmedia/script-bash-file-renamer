@@ -63,6 +63,11 @@ rename_files() {
 	tmpfile=$(mktemp)
 	find . -type f -print0 >"$tmpfile"
 
+	total_files=$(tr -cd '\0' <"$tmpfile" | wc -c)
+	processed_files=0
+
+	echo "0 out of $total_files files complete"
+
 	while IFS= read -r -d '' file; do
 		timestamp=$(date +%s)
 		overlapfile=0
@@ -74,18 +79,22 @@ rename_files() {
 		# .git or macOS resource directories remain untouched.
 		if [[ "$file" == */.* ]]; then
 			((num_files_unchanged++))
+			((processed_files++))
+			echo "$processed_files out of $total_files files complete"
 			continue
 		fi
-
+	
 		truncated=${oldname:0:40}
 
 		# Skip hidden files that begin with a dot (e.g., .DS_Store, .htaccess)
 		# to avoid generating renamed copies of metadata files.
 		if [[ "$oldname" == .* && "$oldname" != "." && "$oldname" != ".." ]]; then
 			((num_files_unchanged++))
+			((processed_files++))
+			echo "$processed_files out of $total_files files complete"
 			continue
 		fi
-
+	
 		if [[ "$oldname" == *.* && "$oldname" != .* ]]; then
 			base="${truncated%.*}"
 			extension=$(echo "${oldname##*.}" | tr '[:upper:]' '[:lower:]')
@@ -144,6 +153,8 @@ rename_files() {
 		else
 			((num_files_unchanged++))
 		fi
+		((processed_files++))
+		echo "$processed_files out of $total_files files complete"
 	done <"$tmpfile"
 
 	rm -f "$tmpfile"

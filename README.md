@@ -4,7 +4,5 @@ A simple Bash utility that copies a directory tree to a new location and normali
 
 ## Documentation
 - [Usage](./docs/usage.md)
-- [Naming conventions](./docs/naming-conventions.md)
-- [How it works](./docs/how-it-works.md)
 - [Development](./docs/development.md)
 - [Full index](./docs/README.md)

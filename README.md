@@ -20,36 +20,36 @@ lowercase naming scheme avoids overwriting, case-sensitivity conflicts, and brit
 
 ### Directories
 
--   Convert every directory name to lowercase letters (e.g. `MyDirectory` → `mydirectory`).
--   Replace spaces with hyphens (e.g. `My Directory/myfile.jpg` → `my-directory/myfile.jpg`).
--   Replace special characters with hyphens (e.g. `My_#1_Directory@My-computer` → `my-1-directory-my-computer`).
--   Trim leading and trailing hyphens (e.g. `__MY_Directory###__` → `my-directory`).
--   Collapse consecutive special characters or hyphens into single hyphens (e.g. `__My_Directory_with_#######_too-many_special-chars`
-    → `my-directory-with-too-many-special-chars`).
+- Convert every directory name to lowercase letters (e.g. `MyDirectory` → `mydirectory`).
+- Replace spaces with hyphens (e.g. `My Directory/myfile.jpg` → `my-directory/myfile.jpg`).
+- Replace special characters with hyphens (e.g. `My_#1_Directory@My-computer` → `my-1-directory-my-computer`).
+- Trim leading and trailing hyphens (e.g. `__MY_Directory###__` → `my-directory`).
+- Collapse consecutive special characters or hyphens into single hyphens (e.g. `__My_Directory_with_#######_too-many_special-chars`
+  → `my-directory-with-too-many-special-chars`).
 
 ### Files
 
--   Convert filenames and extensions to lowercase letters (e.g. `MyFileName.DOC` → `myfilename.doc`).
--   Replace spaces with hyphens (e.g. `My Awesome Document with Spaces.pdf` → `my-awesome-document-with-spaces.pdf`).
--   Replace special characters with hyphens (e.g. `My_File~Wit#Spec!@lC#@racter5.txt` → `my-file-wit-spec-lc-racter5.txt`).
--   Collapse consecutive special characters or hyphens into single hyphens (e.g. `My------Badly___Named#######File.txt` →
-    `my-badly-named-file.txt`).
--   Truncate filenames to 40 characters before adding conflict suffixes.
--   Append a timestamp and iterator when duplicates appear so nothing is overwritten (e.g. `duplicate-file.jpg` →
-    `duplicate-file-12345654321.jpg`).
+- Convert filenames and extensions to lowercase letters (e.g. `MyFileName.DOC` → `myfilename.doc`).
+- Replace spaces with hyphens (e.g. `My Awesome Document with Spaces.pdf` → `my-awesome-document-with-spaces.pdf`).
+- Replace special characters with hyphens (e.g. `My_File~Wit#Spec!@lC#@racter5.txt` → `my-file-wit-spec-lc-racter5.txt`).
+- Collapse consecutive special characters or hyphens into single hyphens (e.g. `My------Badly___Named#######File.txt` →
+  `my-badly-named-file.txt`).
+- Truncate filenames to 40 characters before adding conflict suffixes.
+- Append a timestamp and iterator when duplicates appear so nothing is overwritten (e.g. `duplicate-file.jpg` →
+  `duplicate-file-12345654321.jpg`).
 
 ## What the script does
 
--   Copies the source directory to the destination without touching the original files.
--   Normalizes directory names by lowercasing them, replacing spaces and special characters with single hyphens, trimming extras,
-    and preserving symlinks.
--   Normalizes file names and extensions using the same rules, truncates long basenames to 40 characters, and appends timestamps
-    when duplicates are detected.
+- Copies the source directory to the destination without touching the original files.
+- Normalizes directory names by lowercasing them, replacing spaces and special characters with single hyphens, trimming extras,
+  and preserving symlinks.
+- Normalizes file names and extensions using the same rules, truncates long basenames to 40 characters, and appends timestamps
+  when duplicates are detected.
 
 ## Requirements
 
--   Bash 4+ (tested on macOS and Linux).
--   Standard Unix utilities (`cp`, `find`, `sed`, `tr`, `date`).
+- Bash 4+ (tested on macOS and Linux).
+- Standard Unix utilities (`cp`, `find`, `sed`, `tr`, `date`).
 
 ## Usage
 
@@ -79,3 +79,22 @@ dos2unix renamer.sh
 ```
 
 Install `dos2unix` with `brew install dos2unix` (macOS) or `apt-get install dos2unix` (Ubuntu).
+
+## Code Formatting with Prettier
+
+Prettier keeps code style consistent across the repository. The following commands
+format and check both applications:
+
+```bash
+npx prettier --check "**/*.{js,jsx,ts,tsx,json,css,scss,html,md}"
+```
+
+To apply formatting in place:
+
+```bash
+npx prettier --write "**/*.{js,jsx,ts,tsx,json,css,scss,html,md}"
+```
+
+Install the Prettier – Code Formatter extension in VS Code and enable
+`"editor.formatOnSave": true` to format files automatically on save using the project’s
+`.prettierrc`.

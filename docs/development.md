@@ -3,6 +3,7 @@
 Use these guidelines to keep the repository consistent.
 
 ## Code formatting with Prettier
+
 Prettier keeps code style consistent across the repository. The following commands format and check files:
 
 ```bash
